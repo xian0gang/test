@@ -1,6 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
-
+#include <QDebug>
 
 //using namespace cv;
 //using namespace std;
@@ -30,6 +30,7 @@ cvShowImage("image",image);
 //    cvNamedWindow("value",CV_WINDOW_AUTOSIZE);
 
     cvCvtColor(image,hsv,CV_BGR2HSV);//将RGB色系转为HSV色系
+qDebug("rgb to hsv");
 
     cvSplit(hsv, hue, 0, 0, 0 );//分离三个通道
     cvSplit(hsv, 0, saturation, 0, 0 );
@@ -38,7 +39,7 @@ cvShowImage("image",image);
     cvShowImage("hue",hue);
     cvShowImage("saturation",saturation);
     cvShowImage("value",value);
-
+qDebug("show pic!");
     int th1 = 140;
     cv::Mat global1;
     cv::threshold(cv::Mat(hue,false),global1,th1,360,CV_THRESH_BINARY_INV);
@@ -50,23 +51,23 @@ cvShowImage("image",image);
     int th2 = 80;
     cv::Mat global2;
     cv::threshold(cv::Mat(value,false),global2,th2,255,CV_THRESH_BINARY_INV);
-/*
-    int blockSize = 2;
-        int constValue = 10;
-        cv::Mat local;
-        cv::adaptiveThreshold(cv::Mat( hue,false), local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, blockSize, constValue);
-*/
+
+//    int blockSize = 2;
+//        int constValue = 10;
+//        cv::Mat local;
+//        cv::adaptiveThreshold(cv::Mat( hue,false), local, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, blockSize, constValue);
+
         cv::imwrite("hue.jpg",cv::Mat(hue,false));
         cv::imwrite("global1.jpg", global1);
         cv::imwrite("global2.jpg", global2);
- //       cv::imwrite("local.jpg", local);
+//        cv::imwrite("local.jpg", local);
 
-//cv::imshow("h分量otsu全局阈值", hue);
-//cvShowImage("h分量otsu全局阈值", hue);
+////cv::imshow("h分量otsu全局阈值", hue);
+////cvShowImage("h分量otsu全局阈值", hue);
         cv::imshow("h分量全局阈值", global1);
         cv::imshow("v分量全局阈值", global2);
         cv::imshow("s分量全局阈值", global3);
- //      cv::imshow("h分量局部阈值", local);
+//       cv::imshow("h分量局部阈值", local);
 
         //otsu
 ImageBinarization(hue);
@@ -97,28 +98,28 @@ ImageBinarization(hue);
                         if(global2.at<uchar>(i,j*global2.channels()+n) > 125)
                         {
                             global1.at<uchar>(i,j*global1.channels()+n) = 255;
-                            //local.at<uchar>(i,j*local.channels()+n) = 255;
+//                            local.at<uchar>(i,j*local.channels()+n) = 255;
                         }
                     }
                 }
             }
         cv::imshow("合并h分量和v分量",global1);
- //       cv::imwrite("success.jpg",local);
+        cv::imwrite("success.jpg",global1);
 
 
 
         IplImage *img3 = cvLoadImage("success.jpg",0);
-//            if(img3 == NULL)
-//            {
-////                printf("img load failed!\n");
+            if(img3 == NULL)
+            {
+                qDebug("img load failed!\n");
 //                return 0;
-//            }
+            }
             IplImage *img_erode = cvCreateImage(cvGetSize(img), 8, 1);
             IplImage *img_dilate = cvCreateImage(cvGetSize(img), 8, 1);
 
             cvErode( img3,img_erode, NULL,1); //腐蚀
             cvDilate( img_erode,img_dilate, NULL,3); //膨胀
-//            cvErode( img_dilate,img_erode, NULL,1); //腐蚀
+////            cvErode( img_dilate,img_erode, NULL,1); //腐蚀
         cvShowImage("腐蚀",img_erode);
         cvShowImage("膨胀",img_dilate);
         cv::imwrite("dilate_success.jpg",cv::Mat(img_dilate,false));
@@ -179,17 +180,17 @@ qDebug("contours:%d",contours);
            cv::imshow("final",cv::Mat(image,false));
 
 
-/*****************************************/
-//        cvWrite("dilate_success.jpg",img_dilate);
+///*****************************************/
+////        cvWrite("dilate_success.jpg",img_dilate);
 
-//        cv::waitKey(0); /// 等待用户按键。如果是ESC健则退出等待过程。
-//        while(true)
-//        {
-//          int c;
-//          c = cv::waitKey( 20 );
-//          if( (char)c == 27 )
-//            { break; }
-//         }
+////        cv::waitKey(0); /// 等待用户按键。如果是ESC健则退出等待过程。
+////        while(true)
+////        {
+////          int c;
+////          c = cv::waitKey( 20 );
+////          if( (char)c == 27 )
+////            { break; }
+////         }
 
 
 zhifangtu(value);

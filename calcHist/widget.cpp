@@ -10,6 +10,8 @@
 using namespace cv;
 using namespace std;
 
+#include <QDebug>
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -42,14 +44,25 @@ Widget::Widget(QWidget *parent)
      calcHist( &rgb_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange, uniform, accumulate );
      calcHist( &rgb_planes[2], 1, 0, Mat(), b_hist, 1, &histSize, &histRange, uniform, accumulate );
 
+     double minvalue = 0;
+     double maxvalue = 0;
+     //找出最大值和最小值
+     minMaxLoc(r_hist,&minvalue,&maxvalue,0,0);
+     qDebug("max:%f",maxvalue);
+      qDebug("min:%f",minvalue);
+
      // 创建直方图画布
      int hist_w = 400; int hist_h = 400;
      int bin_w = cvRound( (double) hist_w/histSize );
+     qDebug("hist_w:%d",hist_w);
+     qDebug("histSize:%d",histSize);
+     qDebug("bin_w:%d",bin_w);
 
      Mat histImage( hist_w, hist_h, CV_8UC3, Scalar( 0,0,0) );
      Mat histImage_g( hist_w, hist_h, CV_8UC3, Scalar( 0,0,0) );
      Mat histImage_b( hist_w, hist_h, CV_8UC3, Scalar( 0,0,0) );
-
+     Mat histImage_xg( hist_w, hist_h, CV_8UC3, Scalar( 0,0,0) );
+qDebug("rows:%d",histImage.rows);
      /// 将直方图归一化到范围 [ 0, histImage.rows ]
      normalize(r_hist, r_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
      normalize(g_hist, g_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
@@ -60,6 +73,9 @@ Widget::Widget(QWidget *parent)
        {
          line( histImage, Point( bin_w*(i-1), hist_h - cvRound(r_hist.at<float>(i-1)) ) ,
                           Point( bin_w*(i), hist_h - cvRound(r_hist.at<float>(i)) ),
+                          Scalar( 0, 0, 255), 2, 8, 0  );
+         line( histImage_xg, Point( (i-1), hist_h - cvRound(r_hist.at<float>(i-1)) ) ,
+                          Point( (i), hist_h - cvRound(r_hist.at<float>(i)) ),
                           Scalar( 0, 0, 255), 2, 8, 0  );
          line( histImage_g, Point( bin_w*(i-1), hist_h - cvRound(g_hist.at<float>(i-1)) ) ,
                           Point( bin_w*(i), hist_h - cvRound(g_hist.at<float>(i)) ),
@@ -74,6 +90,7 @@ Widget::Widget(QWidget *parent)
      imshow("calcHist Demo", histImage );
      imshow("calcHist Demo g", histImage_g );
      imshow("calcHist Demo b", histImage_b );
+      imshow("calcHist Demo xg", histImage_xg );
 
      waitKey(0);
 

@@ -18,7 +18,9 @@ Widget::Widget(QWidget *parent)
     Mat img = imread("picture.bmp",0);
     imshow("原图",img);
     //调用直方图函数
-    HIST(img);
+    vector<Mat> rgb_planes;
+    split( img, rgb_planes );
+    HIST(rgb_planes[0]);
 
 }
 
@@ -61,7 +63,7 @@ void Widget::HIST(Mat srcimage)
     {
         float binvalue = dstHist.at<float>(i);
         int realvalue = saturate_cast<int>(binvalue * hpt / maxvalue);
-        rectangle(dstimage,Point(i *scale,histSize-1),Point((i+1)*scale -1,histSize-realvalue),Scalar(255));
+        rectangle(dstimage,Point(i *scale,histSize-1),Point((i+1)*scale -1,histSize - realvalue),Scalar(255,0,0));
     }
     //画纵坐标刻度（像素个数）
        int kedu=0;
