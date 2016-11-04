@@ -32,7 +32,8 @@ Widget::Widget(QWidget *parent) :
 
 cvShowImage("dst",dst);
         int total= img->height*img->width;
-        int cluster_num = 3;
+//        int cluster_num = 3;
+        int cluster_num = 4;
         CvMat *row = cvCreateMat( img->height,img->width,CV_32FC3 );
         cvConvert(dst,row);//转一下类型！
         CvMat *clusters = cvCreateMat( total, 1, CV_32SC1 );
@@ -46,6 +47,7 @@ cvShowImage("dst",dst);
         IplImage* img1 = cvCreateImage( cvSize(img->width,img->height), 8, 1 );//生成用来显示结果的图像
         IplImage* img2 = cvCreateImage( cvSize(img->width,img->height), 8, 1 );//生成用来显示结果的图像
         IplImage* img3 = cvCreateImage( cvSize(img->width,img->height), 8, 1 );//生成用来显示结果的图像
+        IplImage* img4 = cvCreateImage( cvSize(img->width,img->height), 8, 1 );//生成用来显示结果的图像
         s=cvGet2D(img,i,j);
         for(i=0;i<img->height;i++)
         {
@@ -71,11 +73,22 @@ cvShowImage("dst",dst);
                     }
                     else
                     {
-                        s.val[0]=55;
-                        s.val[1]=55;
-                        s.val[2]=55;
-                        cvSet2D(resImg,i,j,s);
-                        cvSet2D(img3,i,j,s);
+                        if (clusters->data.i[i*img->width+j]==3)
+                        {
+                            s.val[0]=155;
+                            s.val[1]=155;
+                            s.val[2]=155;
+                            cvSet2D(resImg,i,j,s);//注意循环顺序
+                            cvSet2D(img4,i,j,s);
+                        }
+                        else
+                        {
+                            s.val[0]=55;
+                            s.val[1]=55;
+                            s.val[2]=55;
+                            cvSet2D(resImg,i,j,s);
+                            cvSet2D(img3,i,j,s);
+                        }
                     }
                 }
             }
@@ -84,23 +97,26 @@ cvShowImage("dst",dst);
         cvShowImage( "resImg", resImg );
 
         IplImage *img1_dst = cvCreateImage(cvGetSize(img), 8, 1);
-        chuli(img1,img1_dst);
-        cvShowImage( "img1_dst", img1_dst );
+//        chuli(img1,img1_dst);
+//        cvShowImage( "img1_dst", img1_dst );
+        cvShowImage( "img1_dst", img1);
         IplImage *img2_dst = cvCreateImage(cvGetSize(img), 8, 1);
-        chuli(img2,img2_dst);
-        cvShowImage( "img2_dst", img2_dst);
+//        chuli(img2,img2_dst);
+//        cvShowImage( "img2_dst", img2_dst);
+        cvShowImage( "img2_dst", img2);
         IplImage *img3_dst = cvCreateImage(cvGetSize(img), 8, 1);
-        chuli(img3,img3_dst);
-        cvShowImage( "img3_dst", img3_dst );
+//        chuli(img3,img3_dst);
+//        cvShowImage( "img3_dst", img3_dst );
+        cvShowImage( "img3_dst", img3 );
+        cvShowImage( "img4_dst", img4 );
 
+//        //合并两个图像
+//        IplImage *img_hebing = cvCreateImage(cvGetSize(img), 8, 1);
+//        cvAddWeighted(img1_dst,0.5,img2_dst,0.5,0.0,img_hebing);
+//        cvShowImage( "img_hebing", img_hebing );
 
-        //合并两个图像
-        IplImage *img_hebing = cvCreateImage(cvGetSize(img), 8, 1);
-        cvAddWeighted(img1_dst,0.5,img2_dst,0.5,0.0,img_hebing);
-        cvShowImage( "img_hebing", img_hebing );
-
-        /*****************分水岭处理**********************/
-        water(img_hebing,img);
+//        /*****************分水岭处理**********************/
+//        water(img_hebing,img);
 
 
         /***************************************/
@@ -114,6 +130,7 @@ cvShowImage("dst",dst);
         cvReleaseImage (&img1);
         cvReleaseImage (&img2);
         cvReleaseImage (&img3);
+        cvReleaseImage (&img4);
 cvReleaseImage (&lab);
 cvReleaseImage (&dst);
 cvReleaseImage (&dst1);
